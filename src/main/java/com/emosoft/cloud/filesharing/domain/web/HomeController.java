@@ -2,6 +2,7 @@ package com.emosoft.cloud.filesharing.domain.web;
 
 //import org.springframework.http.MediaType;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -49,11 +50,19 @@ public String uploadPath = "/uploads/";
     }
 
     File parseFile(File originalFile,int count) {
+        String originalFilePath = originalFile.getPath();
         File parsedFile = new File(originalFile.getAbsolutePath());
 
                 if(parsedFile.exists()&& !parsedFile.isDirectory()){
+                   String fileName = FilenameUtils.getBaseName(originalFilePath);
+                   if(count!=0){
+                       Integer cnt = new Integer(count);
+                       fileName = fileName.substring(0,fileName.length()-2-cnt.toString().length());
+                   }
                     count++;
-                    return parseFile(new File(originalFile.getPath()+"("+count+")"),count);
+                    return parseFile(new File(FilenameUtils.getFullPath(originalFilePath)
+                            +fileName+"("+count+")."
+                            + FilenameUtils.getExtension(originalFilePath)),count);
                 }
 
         return originalFile;
