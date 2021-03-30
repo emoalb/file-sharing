@@ -17,7 +17,8 @@ import java.io.IOException;
 
 @Controller
 public class HomeController {
-public String uploadPath = "/uploads/";
+    public String uploadPath = "e:/uploads/";
+
     @GetMapping("/")
     public String getHomePage() {
 
@@ -42,29 +43,35 @@ public String uploadPath = "/uploads/";
             method = RequestMethod.POST)
     public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, ModelMap modelMap) throws IOException {
         modelMap.addAttribute("file", file);
-        file.transferTo(parseFile(new File(uploadPath + file.getOriginalFilename()),0));
-        System.out.println();
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/");
-        return ResponseEntity.ok().body("Ok");
+
+        try {
+            file.transferTo(parseFile(new File(uploadPath + file.getOriginalFilename()), 0));
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("redirect:/");
+            return ResponseEntity.ok().body("Ok");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+        //  System.out.println();
+
     }
 
-    File parseFile(File originalFile,int count) {
+    File parseFile(File originalFile, int count) {
         String originalFilePath = originalFile.getPath();
         File parsedFile = new File(originalFile.getAbsolutePath());
 
-                if(parsedFile.exists()&& !parsedFile.isDirectory()){
-                   String fileName = FilenameUtils.getBaseName(originalFilePath);
-                   if(count!=0){
-                       Integer cnt = new Integer(count);
-                       fileName = fileName.substring(0,fileName.length()-2-cnt.toString().length());
-                   }
-                    count++;
-                    return parseFile(new File(FilenameUtils.getFullPath(originalFilePath)
-                            +fileName+"("+count+")."
-                            + FilenameUtils.getExtension(originalFilePath)),count);
-                }
-
+        if (parsedFile.exists() && !parsedFile.isDirectory()) {
+            String fileName = FilenameUtils.getBaseName(originalFilePath);
+            if (count != 0) {
+                Integer cnt = new Integer(count);
+                fileName = fileName.substring(0, fileName.length() - 2 - cnt.toString().length());
+            }
+            count++;
+            return parseFile(new File(FilenameUtils.getFullPath(originalFilePath)
+                    + fileName + "(" + count + ")."
+                    + FilenameUtils.getExtension(originalFilePath)), count);
+        }
         return originalFile;
     }
 
