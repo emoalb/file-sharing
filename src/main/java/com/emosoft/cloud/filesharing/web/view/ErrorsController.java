@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class ErrorsController implements ErrorController {
 
     @GetMapping("/error")
-    public ModelAndView getError(){
+    public ModelAndView getError() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setStatus(HttpStatus.NOT_FOUND);
         modelAndView.setViewName("errors");
@@ -20,6 +20,6 @@ public class ErrorsController implements ErrorController {
 
     @Override
     public String getErrorPath() {
-            return "/error";
+        return "/error";
     }
 }

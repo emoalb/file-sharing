@@ -15,6 +15,7 @@ import java.io.IOException;
 public class ApiController {
 
     public String uploadPath = "e:/uploads/";
+
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
     @RequestMapping(path = "/api/uploadFile",
