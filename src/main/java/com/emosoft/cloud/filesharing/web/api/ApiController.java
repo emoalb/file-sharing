@@ -1,6 +1,4 @@
-package com.emosoft.cloud.filesharing.domain.web;
-
-//import org.springframework.http.MediaType;
+package com.emosoft.cloud.filesharing.web.api;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.ResponseEntity;
@@ -10,33 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-//import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-//import java.util.List;
 
 @Controller
-public class HomeController {
+public class ApiController {
+
     public String uploadPath = "e:/uploads/";
-
-    @GetMapping("/")
-    public String getHomePage() {
-
-        return "index";
-    }
-
-//    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
-//    public ModelAndView submit(@RequestParam("file") MultipartFile file, ModelMap modelMap) throws IOException {
-//        modelMap.addAttribute("file", file);
-//
-//        file.transferTo(new File("/uploads/" + file.getOriginalFilename()));
-//        ModelAndView modelAndView = new ModelAndView();
-//
-//        modelAndView.setViewName("redirect:/");
-//
-//        return modelAndView;
-//    }
-
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
     @RequestMapping(path = "/api/uploadFile",
@@ -50,6 +28,8 @@ public class HomeController {
             modelAndView.setViewName("redirect:/");
             return ResponseEntity.ok().body("Ok");
         } catch (Exception e) {
+
+            System.out.println("Error uploading " + file.getName());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
@@ -64,8 +44,7 @@ public class HomeController {
         if (parsedFile.exists() && !parsedFile.isDirectory()) {
             String fileName = FilenameUtils.getBaseName(originalFilePath);
             if (count != 0) {
-                Integer cnt = new Integer(count);
-                fileName = fileName.substring(0, fileName.length() - 2 - cnt.toString().length());
+                fileName = fileName.substring(0, fileName.length() - 2 - Integer.toString(count).length());
             }
             count++;
             return parseFile(new File(FilenameUtils.getFullPath(originalFilePath)
