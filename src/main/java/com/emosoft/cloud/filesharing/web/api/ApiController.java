@@ -10,15 +10,19 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
+@RequestMapping("/api")
 public class ApiController {
 
     public String uploadPath = "e:/uploads/";
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
-    @RequestMapping(path = "/api/uploadFile",
+    @RequestMapping(path = "/uploadFile",
             method = RequestMethod.POST)
     public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, ModelMap modelMap) throws IOException {
         modelMap.addAttribute("file", file);
@@ -34,8 +38,18 @@ public class ApiController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
-        //  System.out.println();
 
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @ResponseBody
+    @RequestMapping(path = "/getFileList", method = RequestMethod.GET)
+    public List<String> getFileList() {
+List<String> pathNames;
+File f = new File(uploadPath);
+pathNames = Arrays.asList(f.list());
+
+        return pathNames;
     }
 
     File parseFile(File originalFile, int count) {
