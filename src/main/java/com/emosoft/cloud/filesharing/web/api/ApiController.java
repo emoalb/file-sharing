@@ -10,7 +10,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,11 +43,10 @@ public class ApiController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
     @RequestMapping(path = "/getFileList", method = RequestMethod.GET)
-    public List<String> getFileList() {
-List<String> pathNames;
-File f = new File(uploadPath);
-pathNames = Arrays.asList(f.list());
-
+    public List<String> getFileList() throws InterruptedException {
+        List<String> pathNames;
+        File f = new File(uploadPath);
+        pathNames = Arrays.asList(f.list());
         return pathNames;
     }
 
