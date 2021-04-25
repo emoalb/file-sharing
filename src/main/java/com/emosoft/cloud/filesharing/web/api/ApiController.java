@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApiController {
 
-    public String uploadPath = "d:/uploads/";
+    public String uploadPath = "e:/uploads/";
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
@@ -45,12 +50,31 @@ public class ApiController {
     @ResponseBody
     @RequestMapping(path = "/getFileList", method = RequestMethod.GET)
     public List<String> getFileList() throws InterruptedException {
-        List<String> pathNames  =new ArrayList<String>();
+        List<String> pathNames = new ArrayList<String>();
         File f = new File(uploadPath);
-        if(f.list()!=null) {
+        if (f.list() != null) {
             pathNames = Arrays.asList(f.list());
         }
         return pathNames;
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @RequestMapping(path = "/downloadFile/{fileName}", method = RequestMethod.GET)
+    public void getDownloadFile(HttpServletRequest req, HttpServletResponse res, @PathVariable("fileName") String fileName) throws InterruptedException {
+        Path file = Paths.get(uploadPath, fileName);
+        if (Files.exists(file)) {
+            res.setContentType("application/octet-stream");
+            res.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            //  res.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+            try {
+                Files.copy(file, res.getOutputStream());
+                res.getOutputStream().flush();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+
+        }
     }
 
     File parseFile(File originalFile, int count) {
@@ -69,5 +93,6 @@ public class ApiController {
         }
         return originalFile;
     }
+
 
 }
