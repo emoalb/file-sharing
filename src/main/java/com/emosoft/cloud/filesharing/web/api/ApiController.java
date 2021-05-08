@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApiController {
 
-    public String uploadPath = "e:/uploads/";
+    public String uploadPath = "d:/uploads/";
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
@@ -51,6 +51,7 @@ public class ApiController {
     @RequestMapping(path = "/getFileList", method = RequestMethod.GET)
     public List<String> getFileList() throws InterruptedException {
         List<String> pathNames = new ArrayList<String>();
+
         File f = new File(uploadPath);
         if (f.list() != null) {
             pathNames = Arrays.asList(f.list());
