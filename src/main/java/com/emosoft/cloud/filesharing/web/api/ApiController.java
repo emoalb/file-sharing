@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApiController {
 
-    public String uploadPath = "d:/uploads/";
+    public String uploadPath = "/uploads/";
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
@@ -33,6 +33,7 @@ public class ApiController {
         modelMap.addAttribute("file", file);
 
         try {
+            Files.createDirectories(Paths.get(uploadPath));
             file.transferTo(parseFile(new File(uploadPath + file.getOriginalFilename()), 0));
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("redirect:/");
