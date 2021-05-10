@@ -1,6 +1,10 @@
 package com.emosoft.cloud.filesharing.web.api;
 
+import com.emosoft.cloud.filesharing.services.models.FilePropertiesServiceModel;
+import com.google.gson.Gson;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,6 +28,13 @@ import java.util.List;
 public class ApiController {
 
     public String uploadPath = "/uploads/";
+    private Gson gson;
+    @Autowired
+    public ApiController(Gson gson) {
+        this.gson = gson;
+    }
+
+
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
@@ -50,14 +61,35 @@ public class ApiController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
     @RequestMapping(path = "/getFileList", method = RequestMethod.GET)
-    public List<String> getFileList() throws InterruptedException {
+    public ResponseEntity<List<String>> getFileList() throws InterruptedException {
         List<String> pathNames = new ArrayList<String>();
-
+      //  Thread.sleep(4000);
         File f = new File(uploadPath);
         if (f.list() != null) {
             pathNames = Arrays.asList(f.list());
         }
-        return pathNames;
+        return new ResponseEntity<>(pathNames, HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @ResponseBody
+    @RequestMapping(path = "/getFileListGson", method = RequestMethod.GET)
+    public ResponseEntity<List<String>> getFileListGson() throws InterruptedException {
+        List<String> pathNames = new ArrayList<String>();
+        List<FilePropertiesServiceModel> filePropertiesServiceModels  = new ArrayList<>();
+     //   Thread.sleep(4000);
+        File f = new File(uploadPath);
+        if (f.list() != null) {
+//            Arrays.stream(f.list())..forEach( ff->{
+//FilePropertiesServiceModel filePropertiesServiceModel = new FilePropertiesServiceModel();
+//filePropertiesServiceModel.setFname(ff.);
+//                filePropertiesServiceModel.setSize(ff.get);
+//            });
+            pathNames = Arrays.asList(f.list());
+        }
+
+
+        return new ResponseEntity<>(pathNames, HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
