@@ -17,5 +17,5 @@ public class FilePropertiesServiceModel {
     private String date;
     @Getter
     @Setter
-    private String size;
+    private Long size;
 }

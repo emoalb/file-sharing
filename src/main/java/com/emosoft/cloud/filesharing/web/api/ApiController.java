@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,11 +30,11 @@ public class ApiController {
 
     public String uploadPath = "/uploads/";
     private Gson gson;
+
     @Autowired
     public ApiController(Gson gson) {
         this.gson = gson;
     }
-
 
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -63,7 +64,7 @@ public class ApiController {
     @RequestMapping(path = "/getFileList", method = RequestMethod.GET)
     public ResponseEntity<List<String>> getFileList() throws InterruptedException {
         List<String> pathNames = new ArrayList<String>();
-      //  Thread.sleep(4000);
+        //  Thread.sleep(4000);
         File f = new File(uploadPath);
         if (f.list() != null) {
             pathNames = Arrays.asList(f.list());
@@ -74,22 +75,32 @@ public class ApiController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @ResponseBody
     @RequestMapping(path = "/getFileListGson", method = RequestMethod.GET)
-    public ResponseEntity<List<String>> getFileListGson() throws InterruptedException {
+    public ResponseEntity<List<FilePropertiesServiceModel>> getFileListGson() throws Exception {
         List<String> pathNames = new ArrayList<String>();
-        List<FilePropertiesServiceModel> filePropertiesServiceModels  = new ArrayList<>();
-     //   Thread.sleep(4000);
+        List<FilePropertiesServiceModel> filePropertiesServiceModels = new ArrayList<>();
+        //   Thread.sleep(4000);
         File f = new File(uploadPath);
         if (f.list() != null) {
-//            Arrays.stream(f.list())..forEach( ff->{
-//FilePropertiesServiceModel filePropertiesServiceModel = new FilePropertiesServiceModel();
-//filePropertiesServiceModel.setFname(ff.);
-//                filePropertiesServiceModel.setSize(ff.get);
-//            });
+            Arrays.stream(f.listFiles()).forEach(ff -> {
+                FilePropertiesServiceModel filePropertiesServiceModel = new FilePropertiesServiceModel();
+
+                filePropertiesServiceModel.setFname(ff.getName());
+                filePropertiesServiceModel.setSize(ff.length());
+
+                try {
+                    BasicFileAttributes attr = Files.readAttributes(ff.toPath(), BasicFileAttributes.class);
+                    filePropertiesServiceModel.setDate(attr.creationTime().toString());
+                    filePropertiesServiceModels.add(filePropertiesServiceModel);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
             pathNames = Arrays.asList(f.list());
         }
 
 
-        return new ResponseEntity<>(pathNames, HttpStatus.OK);
+        return new ResponseEntity<>(filePropertiesServiceModels, HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
