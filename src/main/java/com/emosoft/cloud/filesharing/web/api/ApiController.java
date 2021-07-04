@@ -105,11 +105,14 @@ public class ApiController {
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @RequestMapping(path = "/downloadFile/{fileName}", method = RequestMethod.GET)
-    public void getDownloadFile(HttpServletRequest req, HttpServletResponse res, @PathVariable("fileName") String fileName) throws InterruptedException {
+    public void getDownloadFile(HttpServletRequest req, HttpServletResponse res, @PathVariable("fileName") String fileName) throws InterruptedException, IOException {
         Path file = Paths.get(uploadPath, fileName);
         if (Files.exists(file)) {
+            Long length = Files.size(file);
+            System.out.println(length.toString());
             res.setContentType("application/octet-stream");
             res.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            res.addHeader("Content-Length",length.toString());
             //  res.addHeader("Content-Disposition", "attachment; filename=" + fileName);
             try {
                 Files.copy(file, res.getOutputStream());
@@ -122,7 +125,7 @@ public class ApiController {
         }
     }
 
-    File parseFile(File originalFile, int count) {
+       File parseFile(File originalFile, int count) {
         String originalFilePath = originalFile.getPath();
         File parsedFile = new File(originalFile.getAbsolutePath());
 
